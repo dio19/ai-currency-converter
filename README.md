@@ -28,31 +28,24 @@ Aplicación de conversión de divisas construida con Next.js App Router, React 1
 - **Cliente animado con `motion/react`**: las animaciones de entrada, transiciones de cards y estados visuales usan `motion/react`, no CSS aislado ni lógica ad hoc.
 - **Accesibilidad como requisito funcional**: labels semánticos, `aria-live`, `role="status"` y `role="alert"` están integrados en el flujo normal del producto.
 
-### Evolución arquitectónica relevante
+## AI-First Engineering & Automation
 
-Estas decisiones existieron en iteraciones previas del proyecto y sirven como contexto, pero no describen el estado exacto actual:
+El proyecto está diseñado para que humanos y agentes de IA colaboren sin fricción, protegiendo la arquitectura mediante automatización activa:
 
-- Se exploró una arquitectura más server-first con streaming localizado y Suspense.
-- Se evaluó el uso de Server Actions y rutas más orientadas al servidor.
-- Se intentó una estrategia más profunda de i18n con `next-intl` y routing dinámico.
+- **Documentación Viva**: `AI_CONTEXT.md` se sincroniza automáticamente con el código real mediante `npm run sync:ai-context`, manteniendo un inventario siempre veraz de entidades, puertos y contratos.
+- **Vigilancia Arquitectónica**: `architecture-observer` audita los desvíos estructurales (ej: imports prohibidos desde el dominio hacia el framework) antes de integrar cambios.
+- **Guardianes de Contrato**: `zod-contract-guardian` asegura que toda frontera externa esté protegida por validación explícita.
+- **Modernización Proactiva**: El sistema genera reportes de modernización (`npm run report:react19`) para detectar cuándo patrones manuales pueden ser reemplazados por APIs nativas de React 19 o Next.js.
+- **DX Asistida**: Las fachadas en `src/lib/*` y `src/services/*` reducen el costo cognitivo y facilitan la refactorización incremental por parte de agentes.
 
-Estado actual respecto a eso:
+## Decisiones Técnicas Consolidadas
 
-- Hoy no hay Server Actions implementadas en el código.
-- Hoy sí existe `src/app/loading.tsx` como loading state nativo de ruta.
-- Hoy existe una hidratación inicial server-first para el snapshot de exchange, pero todavía no hay un flujo full streaming basado en Suspense para toda la app.
-- `next-intl` permanece, pero el repo usa routing plano por compatibilidad y simplicidad operativa.
-
-## AI-First Engineering
-
-El proyecto está pensado para que humanos y agentes de IA puedan intervenir sin alucinar arquitectura ni contratos:
-
-- La estructura de carpetas separa reglas de negocio de framework e integraciones.
-- Los contratos importantes están explícitos y centralizados.
-- `AI_CONTEXT.md` funciona como manual operativo para agentes.
-- El código intenta ser self-documented con nombres semánticos y tipos explícitos.
-- Las fachadas en `src/lib/*` y `src/services/*` reducen el costo de refactors incrementales.
-- La documentación viva se concentra en este `README` y en `AI_CONTEXT.md`.
+- **Arquitectura Hexagonal**: El motor del negocio (`src/domain/`) es independiente del framework; los cambios de proveedor o transporte se resuelven en `src/infrastructure/`.
+- **BFF (Backend-for-Frontend)**: La capa de API en Next.js actúa como cocina de limpieza, entregando contratos estables y normalizados a la UI.
+- **Contract-first con Zod**: Todo input/output externo se valida en los bordes.
+- **Resiliencia Local**: Persistencia offline mediante TanStack Query y `PersistQueryClientProvider`.
+- **Errores Estándar (RFC 7807)**: Fallos manejados mediante el handler `withErrorHandler` y serializados como `application/problem+json`.
+- **UX Adaptativa**: Hidratación server-first en la ruta principal para minimizar el trabajo del cliente en el primer render.
 
 ## Data Flow
 
