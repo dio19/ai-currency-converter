@@ -87,28 +87,6 @@ El proyecto está diseñado para que humanos y agentes de IA colaboren sin fricc
 - **Modernización Proactiva**: El sistema genera reportes de modernización (`npm run report:react19`) para detectar cuándo patrones manuales pueden ser reemplazados por APIs nativas de React 19 o Next.js.
 - **DX Asistida**: Las fachadas en `src/lib/*` y `src/services/*` reducen el costo cognitivo y facilitan la refactorización incremental por parte de agentes.
 
-## Decisiones Técnicas Consolidadas
-
-- **Arquitectura Hexagonal**: El motor del negocio (`src/domain/`) es independiente del framework; los cambios de proveedor o transporte se resuelven en `src/infrastructure/`.
-- **BFF (Backend-for-Frontend)**: La capa de API en Next.js actúa como cocina de limpieza, entregando contratos estables y normalizados a la UI.
-- **Contract-first con Zod**: Todo input/output externo se valida en los bordes.
-- **Resiliencia Local**: Persistencia offline mediante TanStack Query y `PersistQueryClientProvider`.
-- **Errores Estándar (RFC 7807)**: Fallos manejados mediante el handler `withErrorHandler` y serializados como `application/problem+json`.
-- **UX Adaptativa**: Hidratación server-first en la ruta principal para minimizar el trabajo del cliente en el primer render.
-
-## Data Flow
-
-1. `src/app/page.tsx` precalienta el snapshot inicial de `USD` en servidor.
-2. Ese snapshot se hidrata al cliente con `HydrationBoundary` para evitar un arranque 100% client-driven.
-3. La UI usa `useCurrencyConverter` para manejar monto, monedas y estado async.
-4. Cuando cambia la moneda base, el hook consulta `/api/exchange?base=...`.
-5. El Route Handler valida la query con `ExchangeQuerySchema`.
-6. `currencyService` delega al use case `createGetExchangeSnapshot`.
-7. El use case llama al puerto `ExchangeRatesProviderPort`.
-8. `VatComplyExchangeRatesProvider` obtiene datos de VatComply y valida contratos con Zod.
-9. La respuesta vuelve normalizada como `ExchangeResponse` con `base`, `timestamp` y `rates`.
-10. El cálculo final de conversión ocurre en el dominio con `convertCurrency`.
-
 ## Frontend Notes
 
 ### Cliente
