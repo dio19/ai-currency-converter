@@ -4,29 +4,78 @@ Aplicación de conversión de divisas construida con Next.js App Router, React 1
 
 ## Architecture & Decisions
 
-### Estado actual del sistema
+🏗️ Decisiones Técnicas Clave
 
-- El core está desacoplado del framework mediante capas explícitas:
-  - `src/domain/`: entidades, puertos y use cases puros.
-  - `src/infrastructure/`: adapters concretos para VatComply, Zod y logging.
-  - `src/shared/`: errores de aplicación y serialización RFC 7807.
-  - `src/services/`: fachadas estables para consumo interno.
-  - `src/app/api/`: delivery HTTP con Route Handlers.
-  - `src/hooks/` y `src/components/`: UI cliente y orquestación visual.
-- La lógica de negocio no depende de React, Next.js ni Zod.
-- El contrato público del BFF es estable y tipado: `{ base, timestamp, rates }`.
-- Todos los errores de servidor se serializan como `application/problem+json` con `code`, `severity` e `instance`.
-- El cliente usa TanStack Query para fetch, caché y persistencia local, mientras el cálculo de conversión vive en el dominio.
-- La ruta principal ya combina render server-first con hidratación inicial de datos para bajar trabajo del primer render cliente.
+1. Separación de dominio (Hexagonal / Clean-inspired)
+   La lógica de negocio vive completamente aislada del framework:
+   src/domain/
+   Ejemplo:
+   convertCurrency()
+   Esto permite:
 
-### Decisiones técnicas vigentes
+- testear sin React ni Next.js
+- cambiar UI o transporte sin tocar reglas de negocio
 
-- **Arquitectura hexagonal**: los cambios de proveedor o de transporte deberían resolverse con nuevos adapters, no tocando el dominio.
-- **Contract-first con Zod**: todo input/output externo se valida en los bordes antes de entrar al core.
-- **Errores enterprise con RFC 7807**: el handler global `withErrorHandler` unifica fallos de validación, upstream y errores inesperados.
-- **Logging estructurado**: el logger emite JSON con contexto, timestamp y error serializado para facilitar observabilidad y debugging asistido por IA.
-- **Cliente animado con `motion/react`**: las animaciones de entrada, transiciones de cards y estados visuales usan `motion/react`, no CSS aislado ni lógica ad hoc.
-- **Accesibilidad como requisito funcional**: labels semánticos, `aria-live`, `role="status"` y `role="alert"` están integrados en el flujo normal del producto.
+2. Server-first + Hydration controlada
+   La app precarga datos en servidor y los hidrata en cliente:
+   // src/app/page.tsx
+   Beneficios:
+
+- mejor performance inicial
+- evita waterfalls de requests
+- UX más rápida en el primer render
+
+3. Orquestación en Server Actions
+   El cliente no llama directamente APIs externas.
+   getExchangeRatesAction()
+   Esto permite:
+
+- centralizar validación
+- encapsular lógica de acceso a datos
+- manejar errores de forma consistente
+
+4. Service Layer como fachada estable
+   currencyService
+   Encapsula:
+
+- acceso a providers externos
+- validación de datos
+- normalización de respuestas
+  Evita que la UI dependa de detalles de implementación.
+
+5. Validación en los bordes (Zod)
+   Toda entrada/salida externa se valida:
+
+- query params
+- respuestas del provider
+  Evita estados inválidos dentro del sistema.
+
+6. Manejo de errores estandarizado
+   Se utiliza formato basado en RFC 7807 (application/problem+json)
+   Permite:
+
+- errores consistentes
+- mejor debugging
+- escalabilidad hacia APIs reales
+
+7. React Query para estado remoto
+
+- cacheo automático
+- manejo de loading/error
+- persistencia opcional
+  useCurrencyConverter
+
+🔄 Flujo de Datos Real
+
+1. Server render (page.tsx) obtiene snapshot inicial
+2. Se hidrata con React Query
+3. El cliente usa useCurrencyConverter
+4. Cuando cambia la moneda:
+   - se ejecuta getExchangeRatesAction
+5. La Server Action:
+   - valida input
+   - llama a currencyService
+6. El dominio calcula la conversión (convertCurrency)
 
 ## AI-First Engineering & Automation
 
@@ -116,7 +165,7 @@ Errores HTTP:
 
 ### Linting y formato
 
-- ESLint 9 usa flat config en [eslint.config.mjs](/Users/henry/currency-converter/eslint.config.mjs).
+- ESLint 9 usa flat config en [eslint.config.mjs]
 - Scripts disponibles:
   - `npm run lint`
   - `npm run lint:fix`
