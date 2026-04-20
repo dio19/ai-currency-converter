@@ -1,0 +1,30 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🛡️ [Pre-push] Final safety gates..."
+
+# 1. Dependency Guard
+echo "🔍 Checking for vulnerabilities..."
+npm audit --audit-level=critical
+if [ $? -ne 0 ]; then
+  echo "❌ [Troubleshooting] Critical vulnerabilities found. Run 'npm audit fix' or update vulnerable dependencies."
+  exit 1
+fi
+
+# 2. Build & Type-check
+echo "🏗️  Validating build and types..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ [Troubleshooting] Build failed. Fix compilation or type errors before pushing."
+  exit 1
+fi
+
+# 3. Performance Budget
+echo "⚡ Checking performance metrics..."
+npx size-limit
+if [ $? -ne 0 ]; then
+  echo "❌ [Troubleshooting] Performance budget exceeded. Optimize your code or assets to stay under the limit."
+  exit 1
+fi
+
+echo "🚀 [Pre-push] Readiness confirmed. Pushing to remote..."

@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-navy: #0c102a;
+  --color-brand-purple: #5f37ff;
+  --color-bg-light: #f0f2f5;
+  --color-text-main: #2e3333;
+  --color-text-muted: #5c667b;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-light text-text-main font-sans antialiased m-0 p-0 overflow-auto;
+  }
+}

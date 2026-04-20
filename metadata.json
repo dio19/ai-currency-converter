@@ -1,0 +1,6 @@
+{
+  "name": "Currency Converter AI-First",
+  "description": "A currency converter application following an AI-First roadmap with hexagonal architecture and BFF layer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

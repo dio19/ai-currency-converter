@@ -1,0 +1,10 @@
+{
+  "*.{js,jsx,ts,tsx}": [
+    "eslint --fix",
+    "prettier --write",
+    "vitest related --run",
+    "node scripts/verify-schema-sync.js",
+    "node scripts/ai-context-sync.mjs"
+  ],
+  "*.{json,md,css,scss}": ["prettier --write"]
+}

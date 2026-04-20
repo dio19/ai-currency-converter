@@ -1,0 +1,13 @@
+{
+  "CurrencyConverter": {
+    "title": "Convertidor de Divisas",
+    "heroTitle": "{amount} {from} a {to} — Convertir {fromName} a {toName}",
+    "amountLabel": "Monto",
+    "fromLabel": "De",
+    "toLabel": "a",
+    "syncing": "Sincronizando tasas de mercado...",
+    "error": "Conexión con el mercado perdida",
+    "lastUpdated": "Conversión de {fromName} a {toName} — Última actualización {date}",
+    "info": "Usamos la tasa media del mercado para nuestro Convertidor. Esto es solo para fines informativos. No recibirás esta tasa al enviar dinero."
+  }
+}

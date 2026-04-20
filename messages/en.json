@@ -1,0 +1,13 @@
+{
+  "CurrencyConverter": {
+    "title": "Currency Converter",
+    "heroTitle": "{amount} {from} to {to} — Convert {fromName} to {toName}",
+    "amountLabel": "Amount",
+    "fromLabel": "From",
+    "toLabel": "to",
+    "syncing": "Syncing market rates...",
+    "error": "Market connection lost",
+    "lastUpdated": "{fromName} to {toName} conversion — Last updated {date}",
+    "info": "We use the mid-market rate for our Converter. This is for informational purposes only. You won't receive this rate when sending money."
+  }
+}

@@ -1,0 +1,24 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🚀 [Pre-commit] Starting quality checks..."
+
+# 1. Secret Shield
+bash scripts/check-secrets.sh
+if [ $? -ne 0 ]; then exit 1; fi
+
+# 2. Lint-staged (Linter + Formatter + Related Tests + Schema Sync)
+npx lint-staged
+if [ $? -ne 0 ]; then
+  echo "❌ [Troubleshooting] Quality checks failed. Fix the issues above (lint errors or broken tests) and try again."
+  exit 1
+fi
+
+# 3. AI-first guardrails
+npm run check:ai-first
+if [ $? -ne 0 ]; then
+  echo "❌ [Troubleshooting] AI-first guardrails detected an issue in architecture, contracts or context sync."
+  exit 1
+fi
+
+echo "✅ [Pre-commit] All checks passed."
